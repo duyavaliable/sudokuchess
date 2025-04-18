@@ -2,13 +2,14 @@
 
 #folder
 src/
+.vscode/
 
 #Executable file
 *.exe
 
 #Static and dynamic libraries are generated
 *.dll
-*.lib
+
 
 #File CMake 
 Makefile
