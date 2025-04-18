@@ -1,0 +1,398 @@
+trong logic_game.cpp
+switch (piece.type)
+{
+  /*// Di chuyển quân tốt
+    if (newY == piece.y - 1 && newX == piece.x)
+    {
+      // Di chuyển thẳng lên
+      return true;
+    }
+    else if (newY == piece.y - 1 && (newX == piece.x - 1 || newX == piece.x + 1))
+    {
+      // Di chuyển chéo để ăn quân đối phương hoặc đẩy quân cùng màu
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY)
+        {
+          if (other.isWhite != piece.isWhite)
+          {
+            // Có quân đối phương ở ô chéo, có thể ăn
+            return true;
+          }
+          else
+          {
+            // Có quân cùng màu ở ô chéo, có thể đẩy
+            int pushX = other.x + ((newX - piece.x) / abs(newX - piece.x));
+            int pushY = other.y + ((newY - piece.y) / abs(newY - piece.y));
+            if (pushX >= 0 && pushX < 8 && pushY >= 0 && pushY < 8)
+            {
+              // Kiểm tra ô đẩy có trống không
+              bool canPush = true;
+              for (const ChessPiece &checkPiece : pieces)
+              {
+                if (checkPiece.x == pushX && checkPiece.y == pushY)
+                {
+                  canPush = false;
+                  break;
+                }
+              }
+              if (canPush)
+              {
+                // Đẩy quân cùng màu sang ô mới
+                other.x = pushX;
+                other.y = pushY;
+                return true; // Chấp nhận di chuyển và đẩy quân
+              }
+              else
+              {
+                return false; // Không thể đẩy vì ô đẩy có quân khác
+              }
+            }
+          }
+        }
+      }
+    }
+    return false;
+
+  case BISHOP:
+    // Tượng di chuyển chéo
+    if (abs(newX - piece.x) == abs(newY - piece.y))
+    {
+      // Kiểm tra nếu có quân ở ô đích
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY)
+        {
+          if (other.isWhite != piece.isWhite)
+          {
+            // Quân đối phương, ăn quân
+            return true;
+          }
+          else
+          {
+            // Quân cùng màu, đẩy quân đi một ô
+            int pushX = other.x + ((newX - piece.x) / abs(newX - piece.x));
+            int pushY = other.y + ((newY - piece.y) / abs(newY - piece.y));
+            if (pushX >= 0 && pushX < 8 && pushY >= 0 && pushY < 8)
+            {
+              // Kiểm tra ô đẩy có trống không
+              bool canPush = true;
+              for (const ChessPiece &checkPiece : pieces)
+              {
+                if (checkPiece.x == pushX && checkPiece.y == pushY)
+                {
+                  canPush = false;
+                  break;
+                }
+              }
+              if (canPush)
+              {
+                // Đẩy quân cùng màu sang ô mới
+                other.x = pushX;
+                other.y = pushY;
+                return true; // Chấp nhận di chuyển và đẩy quân
+              }
+              else
+              {
+                return false; // Không thể đẩy vì ô đẩy có quân khác
+              }
+            }
+          }
+        }
+      }
+      // Nếu không có quân ở ô đích, quân tượng có thể di chuyển bình thường
+      return true;
+    }
+    return false;
+
+  case KNIGHT:
+    // Mã di chuyển theo hình chữ L
+    if ((abs(newX - piece.x) == 2 && abs(newY - piece.y) == 1) || (abs(newX - piece.x) == 1 && abs(newY - piece.y) == 2))
+    {
+      // Kiểm tra xem ô đích có quân cùng màu không
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY && other.isWhite == piece.isWhite)
+        {
+          // Hoán đổi vị trí giữa quân mã và quân ở ô đích
+          int tempX = piece.x;
+          int tempY = piece.y;
+          piece.x = other.x;
+          piece.y = other.y;
+          other.x = tempX;
+          other.y = tempY;
+          return true;
+        }
+      }
+      return true; // Nếu không có quân cùng màu, mã vẫn có thể di chuyển bình thường
+    }
+    return false;
+  case ROOK:
+    // Xe di chuyển theo hàng hoặc cột
+    if (newX == piece.x)
+    {
+      // Di chuyển theo cột
+      int step = (newY > piece.y) ? 1 : -1;
+      for (int y = piece.y + step; y != newY; y += step)
+      {
+        // Kiểm tra các ô giữa (không có quân nào chắn đường)
+        for (const ChessPiece &other : pieces)
+        {
+          if (other.x == piece.x && other.y == y)
+          {
+            return false;
+          }
+        }
+      }
+      // Kiểm tra nếu có quân cùng màu ở ô đích, đẩy quân
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY && other.isWhite == piece.isWhite)
+        {
+          // Đẩy quân đi 1 ô theo hướng di chuyển của quân xe
+          int pushX;
+          if (newX - piece.x == 0)
+          {
+            pushX = other.x;
+          }
+          else
+          {
+            pushX = other.x + ((newX - piece.x) / abs(newX - piece.x));
+          };
+          int pushY;
+          if (newY - piece.y == 0)
+          {
+            pushY = other.y;
+          }
+          else
+          {
+            pushY = other.y + ((newY - piece.y) / abs(newY - piece.y));
+          };
+          if (pushX >= 0 && pushX < 8 && pushY >= 0 && pushY < 8)
+          {
+            // Kiểm tra ô đẩy có trống không
+            bool canPush = true;
+            for (const ChessPiece &checkPiece : pieces)
+            {
+              if (checkPiece.x == pushX && checkPiece.y == pushY)
+              {
+                canPush = false;
+                break;
+              }
+            }
+            if (canPush)
+            {
+              other.x = pushX;
+              other.y = pushY;
+            }
+            else
+            {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+    else if (newY == piece.y)
+    {
+      // Di chuyển theo hàng
+      int step = (newX > piece.x) ? 1 : -1;
+      for (int x = piece.x + step; x != newX; x += step)
+      {
+        // Kiểm tra các ô giữa (không có quân nào chắn đường)
+        for (const ChessPiece &other : pieces)
+        {
+          if (other.y == piece.y && other.x == x)
+          {
+            return false;
+          }
+        }
+      }
+      // Kiểm tra nếu có quân cùng màu ở ô đích, đẩy quân
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY && other.isWhite == piece.isWhite)
+        {
+          // Đẩy quân đi 1 ô theo hướng di chuyển của quân xe
+          int pushX;
+          if (newX - piece.x == 0)
+          {
+            pushX = other.x;
+          }
+          else
+          {
+            pushX = other.x + ((newX - piece.x) / abs(newX - piece.x));
+          };
+          int pushY;
+          if (newY - piece.y == 0)
+          {
+            pushY = other.y;
+          }
+          else
+          {
+            pushY = other.y + ((newY - piece.y) / abs(newY - piece.y));
+          };
+          if (pushX >= 0 && pushX < 8 && pushY >= 0 && pushY < 8)
+          {
+            // Kiểm tra ô đẩy có trống không
+            bool canPush = true;
+            for (const ChessPiece &checkPiece : pieces)
+            {
+              if (checkPiece.x == pushX && checkPiece.y == pushY)
+              {
+                canPush = false;
+                break;
+              }
+            }
+            if (canPush)
+            {
+              other.x = pushX;
+              other.y = pushY;
+            }
+            else
+            {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+    return false;
+  case QUEEN:
+    // Hậu di chuyển như xe và tượng cộng lại
+    if (newX == piece.x || newY == piece.y)
+    {
+      // Di chuyển theo hàng hoặc cột (như xe)
+      int stepX = (newX > piece.x) ? 1 : (newX < piece.x) ? -1
+                                                          : 0;
+      int stepY = (newY > piece.y) ? 1 : (newY < piece.y) ? -1
+                                                          : 0;
+
+      // Kiểm tra các ô giữa (không có quân nào chắn đường)
+      int x = piece.x + stepX, y = piece.y + stepY;
+      while (x != newX || y != newY)
+      {
+        for (const ChessPiece &other : pieces)
+        {
+          if (other.x == x && other.y == y)
+          {
+            return false; // Có quân chắn đường
+          }
+        }
+        x += stepX;
+        y += stepY;
+      }
+
+      // Kiểm tra quân ở ô đích
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY)
+        {
+          if (other.isWhite != piece.isWhite)
+          {
+            // Quân đối phương, ăn quân
+            return true;
+          }
+          else
+          {
+            // Quân cùng màu, đẩy quân đi một ô
+            int pushX = other.x + stepX;
+            int pushY = other.y + stepY;
+            if (pushX >= 0 && pushX < 8 && pushY >= 0 && pushY < 8)
+            {
+              // Kiểm tra ô đẩy có trống không
+              bool canPush = true;
+              for (const ChessPiece &checkPiece : pieces)
+              {
+                if (checkPiece.x == pushX && checkPiece.y == pushY)
+                {
+                  canPush = false;
+                  break;
+                }
+              }
+              if (canPush)
+              {
+                // Đẩy quân cùng màu sang ô mới
+                other.x = pushX;
+                other.y = pushY;
+                return true; // Chấp nhận di chuyển và đẩy quân
+              }
+              else
+              {
+                return false; // Không thể đẩy vì ô đẩy có quân khác
+              }
+            }
+          }
+        }
+      }
+      return true; // Nếu ô đích trống
+    }
+    else if (abs(newX - piece.x) == abs(newY - piece.y))
+    {
+      // Di chuyển theo đường chéo (như tượng)
+      int stepX = (newX > piece.x) ? 1 : -1;
+      int stepY = (newY > piece.y) ? 1 : -1;
+
+      // Kiểm tra các ô giữa (không có quân nào chắn đường)
+      int x = piece.x + stepX, y = piece.y + stepY;
+      while (x != newX || y != newY)
+      {
+        for (const ChessPiece &other : pieces)
+        {
+          if (other.x == x && other.y == y)
+          {
+            return false; // Có quân chắn đường
+          }
+        }
+        x += stepX;
+        y += stepY;
+      }
+
+      // Kiểm tra quân ở ô đích
+      for (ChessPiece &other : pieces)
+      {
+        if (other.x == newX && other.y == newY)
+        {
+          if (other.isWhite != piece.isWhite)
+          {
+            // Quân đối phương, ăn quân
+            return true;
+          }
+          else
+          {
+            // Quân cùng màu, đẩy quân đi một ô
+            int pushX = other.x + stepX;
+            int pushY = other.y + stepY;
+            if (pushX >= 0 && pushX < 8 && pushY >= 0 && pushY < 8)
+            {
+              // Kiểm tra ô đẩy có trống không
+              bool canPush = true;
+              for (const ChessPiece &checkPiece : pieces)
+              {
+                if (checkPiece.x == pushX && checkPiece.y == pushY)
+                {
+                  canPush = false;
+                  break;
+                }
+              }
+              if (canPush)
+              {
+                // Đẩy quân cùng màu sang ô mới
+                other.x = pushX;
+                other.y = pushY;
+                return true; // Chấp nhận di chuyển và đẩy quân
+              }
+              else
+              {
+                return false; // Không thể đẩy vì ô đẩy có quân khác
+              }
+            }
+          }
+        }
+      }
+      return true; // Nếu ô đích trống
+    }
+    return false;
+  */
