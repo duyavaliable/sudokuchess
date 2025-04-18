@@ -1,0 +1,14 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files
+
+#folder
+src/
+
+#Executable file
+*.exe
+
+#Static and dynamic libraries are generated
+*.dll
+*.lib
+
+#File CMake 
+Makefile
